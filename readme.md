@@ -158,7 +158,22 @@ The agent comes equipped with several tools to interact with web pages:
     LANGCHAIN_PROJECT="your_project_name"
     ```
 
-5. Run the backend:
+5. Using Your Own Browser(Optional):
+    - Set `CHROME_PATH` to the executable path of your browser and `CHROME_USER_DATA` to the user data directory of your browser.
+      - Windows
+        ```env
+         CHROME_PATH="C:\Program Files\Google\Chrome\Application\chrome.exe"
+         CHROME_USER_DATA="C:\Users\YourUsername\AppData\Local\Google\Chrome\User Data"
+        ```
+        > Note: Replace `YourUsername` with your actual Windows username for Windows systems.
+      - Mac
+        ```env
+         CHROME_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+         CHROME_USER_DATA="~/Library/Application Support/Google/Chrome/Profile 1"
+        ```
+    - go to chrome://version/ in Chrome, find the path to your chrome executable and user data (Profile Path) directory.
+
+6. Run the backend:
 
    Make sure you are in the backend folder
 
@@ -172,7 +187,7 @@ The agent comes equipped with several tools to interact with web pages:
     uvicorn app.main:app --port 8000
     ```
 
-6. Access the API at `http://localhost:8000`
+7. Access the API at `http://localhost:8000`
 
 ## Frontend Setup
 
