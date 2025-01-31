@@ -184,8 +184,8 @@ The agent comes equipped with several tools to interact with web pages:
 2. Install dependencies:
     ```bash
     npm install
+    playwright install
     ```
-
 3. Run the frontend:
     ```bash
     npm run dev
