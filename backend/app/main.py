@@ -7,7 +7,7 @@ from contextlib import asynccontextmanager
 import json
 import time
 # Import necessary functions from webrover.py
-from .webrover import setup_browser_2, main_agent_graph
+from .webrover import setup_browser, main_agent_graph
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -41,18 +41,21 @@ class QueryRequest(BaseModel):
     query: str
 
 @app.post("/setup-browser")
-async def setup_browser(request: BrowserSetupRequest):
+async def setup_browser_endpoint(request: BrowserSetupRequest):
     try:
         # Clear any existing session
         if browser_session["playwright"]:
             await cleanup_browser()
             
         # Setup new browser session
-        playwright, browser, page = await setup_browser_2(request.url)
+        if request.url == "https://www.google.com":
+            print(f"Setting up browser for {request.url}")
+            browser, page = await setup_browser(request.url)
+        else:
+            browser, page = await setup_browser(request.url)
         
         # Store session info
         browser_session.update({
-            "playwright": playwright,
             "browser": browser,
             "page": page
         })

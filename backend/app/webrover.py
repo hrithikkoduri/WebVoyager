@@ -18,6 +18,7 @@ from langchain_core.prompts import ChatPromptTemplate
 import platform
 from IPython.display import Image, display
 from langgraph.graph import StateGraph, START, END
+from .webrover_browser import WebRoverBrowser
 
 
 
@@ -182,43 +183,11 @@ async def mark_page(page):
     }
 
 
-async def setup_browser_2(go_to_page: str):
-    playwright = await async_playwright().start()
-    
-    # Add browser arguments to appear more human-like
-    browser_args = [
-        '--disable-dev-shm-usage',
-        '--disable-blink-features=AutomationControlled',  # Hide automation
-        '--no-sandbox',
-        '--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',  # Use a common user agent
-    ]
-    
-    # Add browser context options
-    context_options = {
-        #"viewport": {"width": 1076, "height": 1076},  # Standard desktop resolution
-        "viewport": {"width": 1280, "height": 720},
-        "user_agent": 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-        "permissions": ['geolocation'],
-        "geolocation": {"latitude": 37.7749, "longitude": -122.4194},  # Set a fixed location
-        "locale": 'en-US',
-        "timezone_id": 'America/Los_Angeles',
-    }
-    
-    browser = await playwright.chromium.launch(
-        headless=False,
-        args=browser_args
-    )
-    
-    # Create context with the specified options
-    context = await browser.new_context(**context_options)
-    
-    # Enable JavaScript and cookies
-    await context.add_init_script("""
-        Object.defineProperty(navigator, 'webdriver', {
-            get: () => undefined
-        });
-    """)
-    
+async def setup_browser(go_to_page: str):
+    print(f"Setting up browser for {go_to_page}")
+    browser = WebRoverBrowser()
+    browser, context = await browser.connect_to_chrome()
+
     page = await context.new_page()
     
     try:
@@ -227,8 +196,8 @@ async def setup_browser_2(go_to_page: str):
         print(f"Error loading page: {e}")
         # Fallback to Google if the original page fails to load
         await page.goto("https://www.google.com", timeout=60000, wait_until="domcontentloaded")
-    
-    return playwright, browser, page
+
+    return browser, page
 
 
 
