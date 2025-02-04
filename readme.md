@@ -151,10 +151,10 @@ The agent comes equipped with several tools to interact with web pages:
 
 4. Set up environment variables in `.env`:
     ```bash
-    OPENAI_API_KEY="your_openai_api_key",
-    LANGCHAIN_API_KEY="your_langchain_api_key",
-    LANGCHAIN_TRACING_V2="true",
-    LANGCHAIN_ENDPOINT="https://api.smith.langchain.com",
+    OPENAI_API_KEY="your_openai_api_key"
+    LANGCHAIN_API_KEY="your_langchain_api_key"
+    LANGCHAIN_TRACING_V2="true"
+    LANGCHAIN_ENDPOINT="https://api.smith.langchain.com"
     LANGCHAIN_PROJECT="your_project_name"
     ```
 
