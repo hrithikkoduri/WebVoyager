@@ -48,6 +48,11 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 
 mark_page_path = os.path.join(current_dir, "static", "mark_page.js")
 
+# Path to the local Chrome executable
+chrome_path = os.getenv("CHROME_PATH")
+
+# Path to the existing Chrome user data directory
+user_data_dir = os.getenv("CHROME_USER_DATA")
 
 
 class Bbox(TypedDict):
@@ -203,23 +208,42 @@ async def setup_browser_2(go_to_page: str):
         "locale": 'en-US',
         "timezone_id": 'America/Los_Angeles',
     }
+
+    if chrome_path and user_data_dir:
+        browser = await playwright.chromium.launch_persistent_context(
+            user_data_dir=user_data_dir,
+            executable_path=chrome_path,
+            headless=False,
+            args=browser_args,
+            **context_options
+        )
+
+        page = await browser.new_page()
+
+    else:
+        if chrome_path:
+            browser = await playwright.chromium.launch(
+                headless=False,
+                executable_path=chrome_path,
+                args=browser_args
+            )
+        else:
+            browser = await playwright.chromium.launch(
+                headless=False,
+                args=browser_args
+            )
     
-    browser = await playwright.chromium.launch(
-        headless=False,
-        args=browser_args
-    )
-    
-    # Create context with the specified options
-    context = await browser.new_context(**context_options)
-    
-    # Enable JavaScript and cookies
-    await context.add_init_script("""
-        Object.defineProperty(navigator, 'webdriver', {
-            get: () => undefined
-        });
-    """)
-    
-    page = await context.new_page()
+        # Create context with the specified options
+        context = await browser.new_context(**context_options)
+
+        # Enable JavaScript and cookies
+        await context.add_init_script("""
+            Object.defineProperty(navigator, 'webdriver', {
+                get: () => undefined
+            });
+        """)
+
+        page = await context.new_page()
     
     try:
         await page.goto(go_to_page, timeout=80000, wait_until="domcontentloaded")
